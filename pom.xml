@@ -36,7 +36,7 @@
     <plugin.version.maven-release-plugin>3.3.1</plugin.version.maven-release-plugin>
     <plugin.version.frontend-maven-plugin>2.0.0</plugin.version.frontend-maven-plugin>
     <plugin.version.maven-source-plugin>3.4.0</plugin.version.maven-source-plugin>
-    <plugin.version.openapi-generator-maven-plugin>7.21.0</plugin.version.openapi-generator-maven-plugin>
+    <plugin.version.openapi-generator-maven-plugin>7.26.0</plugin.version.openapi-generator-maven-plugin>
   </properties>
   <dependencyManagement>
     <dependencies>
