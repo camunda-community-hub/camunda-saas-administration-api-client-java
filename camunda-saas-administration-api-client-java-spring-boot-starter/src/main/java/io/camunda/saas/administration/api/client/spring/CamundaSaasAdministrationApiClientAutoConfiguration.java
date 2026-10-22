@@ -7,12 +7,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Registers a {@link CamundaSaasAdministrationApiClient} bean unless {@code
  * camunda.saas.administration.api.enabled} is set to {@code false}. Define your own bean of that
- * type to replace it. Startup fails if {@code client-id} or {@code client-secret} is blank.
+ * type to replace it; as the external properties are still bound and validated, also set {@code
+ * enabled=false} if you do not configure the credentials externally. Startup fails if {@code
+ * client-id} or {@code client-secret} is blank.
  */
 @AutoConfiguration
 @ConditionalOnProperty(
@@ -20,38 +21,29 @@ import org.springframework.context.annotation.Configuration;
     name = "enabled",
     havingValue = "true",
     matchIfMissing = true)
+@EnableConfigurationProperties({
+  CamundaSaasAdministrationApiClientSpringProperties.class,
+  CamundaOAuthSpringProperties.class
+})
 public class CamundaSaasAdministrationApiClientAutoConfiguration {
-
-  /**
-   * Binds and validates the external properties only when no {@link
-   * CamundaSaasAdministrationApiClientProperties} bean is supplied, so overriding that bean does
-   * not require the external credentials.
-   */
-  @Configuration(proxyBeanMethods = false)
-  @ConditionalOnMissingBean(CamundaSaasAdministrationApiClientProperties.class)
-  @EnableConfigurationProperties({
-    CamundaSaasAdministrationApiClientSpringProperties.class,
-    CamundaOAuthSpringProperties.class
-  })
-  static class DefaultPropertiesConfiguration {
-
-    @Bean
-    CamundaSaasAdministrationApiClientProperties camundaSaasAdministrationApiClientProperties(
-        CamundaSaasAdministrationApiClientSpringProperties properties,
-        CamundaOAuthSpringProperties oAuthProperties) {
-      return new CamundaSaasAdministrationApiClientProperties(
-          properties.baseUrl(),
-          properties.clientId(),
-          properties.clientSecret(),
-          oAuthProperties.oauthUrl(),
-          properties.oauthAudience());
-    }
-  }
 
   @Bean
   @ConditionalOnMissingBean
   public CamundaSaasAdministrationApiClient camundaSaasAdministrationApiClient(
-      CamundaSaasAdministrationApiClientProperties properties) {
-    return CamundaSaasAdministrationApiClient.create(properties);
+      CamundaSaasAdministrationApiClientSpringProperties properties,
+      CamundaOAuthSpringProperties oAuthProperties) {
+    return CamundaSaasAdministrationApiClient.create(
+        toClientProperties(properties, oAuthProperties));
+  }
+
+  static CamundaSaasAdministrationApiClientProperties toClientProperties(
+      CamundaSaasAdministrationApiClientSpringProperties properties,
+      CamundaOAuthSpringProperties oAuthProperties) {
+    return new CamundaSaasAdministrationApiClientProperties(
+        properties.baseUrl(),
+        properties.clientId(),
+        properties.clientSecret(),
+        oAuthProperties.oauthUrl(),
+        properties.oauthAudience());
   }
 }
