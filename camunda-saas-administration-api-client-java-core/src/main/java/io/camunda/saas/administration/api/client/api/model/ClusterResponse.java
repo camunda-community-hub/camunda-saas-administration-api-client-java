@@ -42,7 +42,9 @@ public record ClusterResponse(
       UNHEALTHY,
       UPDATING,
       RESUMING,
-      SUSPENDED
+      SUSPENDED,
+      WAITING_FOR_INPUT,
+      MAINTENANCE
     }
   }
 
