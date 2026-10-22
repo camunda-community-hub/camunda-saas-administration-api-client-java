@@ -64,6 +64,7 @@ import io.camunda.saas.administration.api.client.gen.model.OrganizationRole;
 import io.camunda.saas.administration.api.client.gen.model.Parameters;
 import io.camunda.saas.administration.api.client.gen.model.ParametersChannelsInner;
 import io.camunda.saas.administration.api.client.gen.model.ParametersChannelsInnerAllowedGenerationsInner;
+import io.camunda.saas.administration.api.client.gen.model.ParametersChannelsInnerDefaultGeneration;
 import io.camunda.saas.administration.api.client.gen.model.ParametersRegionsInner;
 import io.camunda.saas.administration.api.client.gen.model.ParametersRegionsInnerBackupsInner;
 import io.camunda.saas.administration.api.client.gen.model.ParametersRegionsInnerBackupsInnerRegionsInner;
@@ -275,6 +276,8 @@ public class ModelMapper {
       case UPDATING -> ComponentStatus.UPDATING;
       case RESUMING -> ComponentStatus.RESUMING;
       case SUSPENDED -> ComponentStatus.SUSPENDED;
+      case WAITING_FOR_INPUT -> ComponentStatus.WAITING_FOR_INPUT;
+      case MAINTENANCE -> ComponentStatus.MAINTENANCE;
     };
   }
 
@@ -533,8 +536,6 @@ public class ModelMapper {
       case OWNER -> MemberResponse.Role.OWNER;
       case MEMBER -> MemberResponse.Role.MEMBER;
       case SUPPORTAGENT -> MemberResponse.Role.SUPPORTAGENT;
-      case ORGANIZATIONADMIN -> MemberResponse.Role.ORGANIZATIONADMIN;
-      case ORGANIZATIONOWNER -> MemberResponse.Role.ORGANIZATIONOWNER;
     };
   }
 
@@ -544,7 +545,7 @@ public class ModelMapper {
     }
     return new ParametersResponse(
         fromChannelList(parameters.getChannels()),
-        fromClusterPlanTypeList(parameters.getClusterPlanTypes()),
+        fromDefaultGenerationList(parameters.getClusterPlanTypes()),
         fromRegionList(parameters.getRegions()));
   }
 
@@ -604,12 +605,29 @@ public class ModelMapper {
         parametersRegionsInnerBackupsInnerRegionsInner.getId());
   }
 
-  private static List<ParametersResponse.ClusterPlanType> fromClusterPlanTypeList(
-      List<ParametersChannelsInnerAllowedGenerationsInner> clusterPlanTypes) {
+  private static List<ParametersResponse.ClusterPlanType> fromAllowedGenerationList(
+      List<ParametersChannelsInnerAllowedGenerationsInner> allowedGenerations) {
+    if (allowedGenerations == null) {
+      return null;
+    }
+    return allowedGenerations.stream().map(ModelMapper::from).toList();
+  }
+
+  private static List<ParametersResponse.ClusterPlanType> fromDefaultGenerationList(
+      List<ParametersChannelsInnerDefaultGeneration> clusterPlanTypes) {
     if (clusterPlanTypes == null) {
       return null;
     }
     return clusterPlanTypes.stream().map(ModelMapper::from).toList();
+  }
+
+  private static ParametersResponse.ClusterPlanType from(
+      ParametersChannelsInnerDefaultGeneration defaultGeneration) {
+    if (defaultGeneration == null) {
+      return null;
+    }
+    return new ParametersResponse.ClusterPlanType(
+        defaultGeneration.getName(), defaultGeneration.getUuid());
   }
 
   private static ParametersResponse.ClusterPlanType from(
@@ -636,7 +654,7 @@ public class ModelMapper {
       return null;
     }
     return new ParametersResponse.Channel(
-        fromClusterPlanTypeList(parametersChannelsInner.getAllowedGenerations()),
+        fromAllowedGenerationList(parametersChannelsInner.getAllowedGenerations()),
         from(parametersChannelsInner.getDefaultGeneration()),
         parametersChannelsInner.getName(),
         parametersChannelsInner.getUuid());
