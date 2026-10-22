@@ -22,28 +22,28 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
     <plugin.version.function-maven-plugin>1.0.2</plugin.version.function-maven-plugin>
-    <plugin.version.maven-enforcer-plugin>3.6.2</plugin.version.maven-enforcer-plugin>
+    <plugin.version.maven-enforcer-plugin>3.6.3</plugin.version.maven-enforcer-plugin>
     <plugin.version.maven-install-plugin>3.1.4</plugin.version.maven-install-plugin>
     <plugin.version.maven-resources-plugin>3.5.0</plugin.version.maven-resources-plugin>
     <plugin.version.maven-shade-plugin>3.6.2</plugin.version.maven-shade-plugin>
     <plugin.version.maven-surefire-plugin>3.5.5</plugin.version.maven-surefire-plugin>
-    <plugin.version.spotless-maven-plugin>3.4.0</plugin.version.spotless-maven-plugin>
+    <plugin.version.spotless-maven-plugin>3.10.4</plugin.version.spotless-maven-plugin>
     <plugin.version.maven-compiler-plugin>3.15.0</plugin.version.maven-compiler-plugin>
     <plugin.version.native-maven-plugin>0.11.5</plugin.version.native-maven-plugin>
-    <plugin.version.maven-depdendency-plugin>3.10.0</plugin.version.maven-depdendency-plugin>
+    <plugin.version.maven-depdendency-plugin>3.11.0</plugin.version.maven-depdendency-plugin>
     <plugin.version.maven-site-plugin>3.21.0</plugin.version.maven-site-plugin>
     <plugin.version.maven-assembly-plugin>3.8.0</plugin.version.maven-assembly-plugin>
     <plugin.version.maven-release-plugin>3.3.1</plugin.version.maven-release-plugin>
-    <plugin.version.frontend-maven-plugin>2.0.0</plugin.version.frontend-maven-plugin>
+    <plugin.version.frontend-maven-plugin>2.0.2</plugin.version.frontend-maven-plugin>
     <plugin.version.maven-source-plugin>3.4.0</plugin.version.maven-source-plugin>
-    <plugin.version.openapi-generator-maven-plugin>7.21.0</plugin.version.openapi-generator-maven-plugin>
+    <plugin.version.openapi-generator-maven-plugin>7.26.0</plugin.version.openapi-generator-maven-plugin>
   </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>4.0.5</version>
+        <version>4.0.8</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
