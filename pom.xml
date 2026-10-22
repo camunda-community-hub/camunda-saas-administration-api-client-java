@@ -9,7 +9,7 @@
   <groupId>io.camunda</groupId>
   <artifactId>camunda-saas-administration-api-client-java-parent</artifactId>
   <name>Camunda Saas Administration API Client Java Parent</name>
-  <version>3.2.1-SNAPSHOT</version>
+  <version>3.3.1</version>
   <packaging>pom</packaging>
   <modules>
     <module>camunda-saas-administration-api-client-java-generated</module>
