@@ -64,7 +64,7 @@ For Spring Boot applications, use the starter instead of bootstrapping the clien
 </dependency>
 ```
 
-A `CamundaSaasAdministrationApiClient` bean is registered as soon as `client-id` and `client-secret` are set. Define your own bean of that type to replace it. The properties are the same as above:
+A `CamundaSaasAdministrationApiClient` bean is registered by default. Set `camunda.saas.administration.api.enabled` to `false` to disable it, or define your own bean of that type to replace it. The properties are the same as above:
 
 ```yaml
 camunda:
@@ -72,6 +72,7 @@ camunda:
   saas:
     administration:
       api:
+        enabled: true # optional
         client-id: ... # mandatory
         client-secret: ... # mandatory
         base-url: https://api.cloud.camunda.io # optional

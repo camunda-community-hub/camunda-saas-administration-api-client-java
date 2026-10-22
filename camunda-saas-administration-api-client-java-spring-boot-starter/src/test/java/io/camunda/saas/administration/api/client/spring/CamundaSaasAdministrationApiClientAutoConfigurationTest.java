@@ -16,15 +16,12 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
               AutoConfigurations.of(CamundaSaasAdministrationApiClientAutoConfiguration.class));
 
   @Test
-  void shouldNotCreateClientWithoutCredentials() {
-    runner.run(
-        context -> assertThat(context).doesNotHaveBean(CamundaSaasAdministrationApiClient.class));
-  }
-
-  @Test
-  void shouldNotCreateClientWithoutClientSecret() {
+  void shouldNotCreateClientWhenDisabled() {
     runner
-        .withPropertyValues("camunda.saas.administration.api.client-id=id")
+        .withPropertyValues(
+            "camunda.saas.administration.api.enabled=false",
+            "camunda.saas.administration.api.client-id=id",
+            "camunda.saas.administration.api.client-secret=secret")
         .run(
             context ->
                 assertThat(context).doesNotHaveBean(CamundaSaasAdministrationApiClient.class));

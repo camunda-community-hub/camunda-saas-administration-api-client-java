@@ -12,14 +12,16 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 
 /**
- * Registers a {@link CamundaSaasAdministrationApiClient} bean once {@code
- * camunda.saas.administration.api.client-id} and {@code client-secret} are configured. Define your
- * own bean of that type to replace it.
+ * Registers a {@link CamundaSaasAdministrationApiClient} bean unless {@code
+ * camunda.saas.administration.api.enabled} is set to {@code false}. Define your own bean of that
+ * type to replace it.
  */
 @AutoConfiguration
 @ConditionalOnProperty(
     prefix = "camunda.saas.administration.api",
-    name = {"client-id", "client-secret"})
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = true)
 @EnableConfigurationProperties(CamundaSaasAdministrationApiClientSpringProperties.class)
 public class CamundaSaasAdministrationApiClientAutoConfiguration {
 
