@@ -4,7 +4,7 @@
   <parent>
     <groupId>io.camunda</groupId>
     <artifactId>camunda-saas-administration-api-client-java-parent</artifactId>
-    <version>3.3.1</version>
+    <version>3.3.2-SNAPSHOT</version>
   </parent>
   <artifactId>camunda-saas-administration-api-client-java-core</artifactId>
   <name>Camunda Saas Administration API Client Java Core</name>
