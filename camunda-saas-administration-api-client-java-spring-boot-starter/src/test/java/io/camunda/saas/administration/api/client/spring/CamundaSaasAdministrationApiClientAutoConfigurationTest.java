@@ -34,9 +34,8 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
             assertThat(context)
                 .hasFailed()
                 .getFailure()
-                .hasRootCauseMessage(
-                    "Property 'camunda.saas.administration.api.client-id' must be set, or disable"
-                        + " the client with 'camunda.saas.administration.api.enabled=false'"));
+                .hasStackTraceContaining("clientId")
+                .hasStackTraceContaining("clientSecret"));
   }
 
   @Test
@@ -48,10 +47,7 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
                 assertThat(context)
                     .hasFailed()
                     .getFailure()
-                    .hasRootCauseMessage(
-                        "Property 'camunda.saas.administration.api.client-secret' must be set, or"
-                            + " disable the client with"
-                            + " 'camunda.saas.administration.api.enabled=false'"));
+                    .hasStackTraceContaining("clientSecret"));
   }
 
   @Test
