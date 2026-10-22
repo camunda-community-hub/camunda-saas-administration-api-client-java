@@ -15,6 +15,6 @@ repos:
   - id: mvn-verify
     name: mvn-verify (regenerates client from the OpenAPI spec)
     language: system
-    entry: env -u GIT_DIR mvn verify -PcheckFormat -DskipTests -B
+    entry: env -u GIT_DIR mvn verify -PgenerateClient,checkFormat -DskipTests -B
     pass_filenames: false
     files: \.(java|xml)$

@@ -78,3 +78,13 @@ camunda:
         base-url: https://api.cloud.camunda.io # optional
         oauth-audience: api.cloud.camunda.io # optional
 ```
+
+## Development
+
+The generated client sources are committed in `camunda-saas-administration-api-client-java-generated/src/main/java`, so regular builds do not need the OpenAPI spec. To regenerate them from the current spec, run:
+
+```
+mvn verify -PgenerateClient
+```
+
+This also runs as a pre-commit hook.
