@@ -209,9 +209,6 @@
               </format>
             </formats>
             <java>
-              <excludes>
-                <exclude>**/io/camunda/saas/administration/api/client/gen/**</exclude>
-              </excludes>
               <googleJavaFormat />
               <removeUnusedImports />
             </java>
