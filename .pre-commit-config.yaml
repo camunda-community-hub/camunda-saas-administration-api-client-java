@@ -1,0 +1,20 @@
+# pre-commit hooks run automatically before each commit.
+# Install locally with: pip install pre-commit && pre-commit install
+# Run manually against all files: pre-commit run --all-files
+repos:
+- repo: meta
+  hooks:
+  - id: check-hooks-apply
+  - id: check-useless-excludes
+- repo: https://github.com/renovatebot/pre-commit-hooks
+  rev: 44.166.0
+  hooks:
+  - id: renovate-config-validator
+- repo: local
+  hooks:
+  - id: mvn-verify
+    name: mvn-verify (regenerates client from the OpenAPI spec)
+    language: system
+    entry: env -u GIT_DIR mvn verify -PcheckFormat -DskipTests -B
+    pass_filenames: false
+    files: \.(java|xml)$
