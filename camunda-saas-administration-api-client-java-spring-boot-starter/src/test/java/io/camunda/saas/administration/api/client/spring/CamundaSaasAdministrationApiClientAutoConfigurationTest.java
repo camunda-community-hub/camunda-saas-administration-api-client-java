@@ -92,6 +92,23 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
   }
 
   @Test
+  void shouldCreateClientFromCustomPropertiesBeanWithoutExternalCredentials() {
+    CamundaSaasAdministrationApiClientProperties custom =
+        new CamundaSaasAdministrationApiClientProperties(
+            "http://localhost/api", "id", "secret", "http://localhost/token", "audience");
+    runner
+        .withBean(CamundaSaasAdministrationApiClientProperties.class, () -> custom)
+        .run(
+            context -> {
+              assertThat(context)
+                  .hasNotFailed()
+                  .hasSingleBean(CamundaSaasAdministrationApiClient.class);
+              assertThat(context.getBean(CamundaSaasAdministrationApiClientProperties.class))
+                  .isSameAs(custom);
+            });
+  }
+
+  @Test
   void shouldBackOffWhenClientBeanIsDefined() {
     CamundaSaasAdministrationApiClient custom =
         CamundaSaasAdministrationApiClient.create(
