@@ -64,7 +64,7 @@ For Spring Boot applications, use the starter instead of bootstrapping the clien
 </dependency>
 ```
 
-A `CamundaSaasAdministrationApiClient` bean is registered by default. Set `camunda.saas.administration.api.enabled` to `false` to disable it, or define your own bean of that type to replace it. To have missing credentials fail at startup, add `spring-boot-starter-validation` to your application; the starter does not bring a validator itself. The properties are the same as above:
+A `CamundaSaasAdministrationApiClient` bean is registered by default. Set `camunda.saas.administration.api.enabled` to `false` to disable it, or define your own bean of that type to replace it (the external properties are still validated, so set `enabled` to `false` if you do not configure the credentials externally). To have missing credentials fail at startup, add `spring-boot-starter-validation` to your application; the starter does not bring a validator itself. The properties are the same as above:
 
 ```yaml
 camunda:

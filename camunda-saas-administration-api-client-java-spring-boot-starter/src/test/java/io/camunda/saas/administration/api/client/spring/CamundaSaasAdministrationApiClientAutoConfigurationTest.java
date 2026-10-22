@@ -6,6 +6,7 @@ import io.camunda.saas.administration.api.client.api.CamundaSaasAdministrationAp
 import io.camunda.saas.administration.api.client.properties.CamundaSaasAdministrationApiClientProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
@@ -59,7 +60,7 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
         .run(
             context -> {
               assertThat(context).hasSingleBean(CamundaSaasAdministrationApiClient.class);
-              assertThat(context.getBean(CamundaSaasAdministrationApiClientProperties.class))
+              assertThat(toClientProperties(context))
                   .isEqualTo(
                       new CamundaSaasAdministrationApiClientProperties(
                           "https://api.cloud.camunda.io",
@@ -81,7 +82,7 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
             "camunda.oauth-url=http://localhost:8080/token")
         .run(
             context ->
-                assertThat(context.getBean(CamundaSaasAdministrationApiClientProperties.class))
+                assertThat(toClientProperties(context))
                     .isEqualTo(
                         new CamundaSaasAdministrationApiClientProperties(
                             "http://localhost:8080/api",
@@ -89,23 +90,6 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
                             "secret",
                             "http://localhost:8080/token",
                             "audience")));
-  }
-
-  @Test
-  void shouldCreateClientFromCustomPropertiesBeanWithoutExternalCredentials() {
-    CamundaSaasAdministrationApiClientProperties custom =
-        new CamundaSaasAdministrationApiClientProperties(
-            "http://localhost/api", "id", "secret", "http://localhost/token", "audience");
-    runner
-        .withBean(CamundaSaasAdministrationApiClientProperties.class, () -> custom)
-        .run(
-            context -> {
-              assertThat(context)
-                  .hasNotFailed()
-                  .hasSingleBean(CamundaSaasAdministrationApiClient.class);
-              assertThat(context.getBean(CamundaSaasAdministrationApiClientProperties.class))
-                  .isSameAs(custom);
-            });
   }
 
   @Test
@@ -123,5 +107,12 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
             context ->
                 assertThat(context.getBean(CamundaSaasAdministrationApiClient.class))
                     .isSameAs(custom));
+  }
+
+  private static CamundaSaasAdministrationApiClientProperties toClientProperties(
+      AssertableApplicationContext context) {
+    return CamundaSaasAdministrationApiClientAutoConfiguration.toClientProperties(
+        context.getBean(CamundaSaasAdministrationApiClientSpringProperties.class),
+        context.getBean(CamundaOAuthSpringProperties.class));
   }
 }
