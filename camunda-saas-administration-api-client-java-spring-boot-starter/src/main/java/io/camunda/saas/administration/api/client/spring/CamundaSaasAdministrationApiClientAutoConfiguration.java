@@ -1,10 +1,7 @@
 package io.camunda.saas.administration.api.client.spring;
 
-import static io.camunda.saas.administration.api.client.properties.PropertiesConstants.Default.CAMUNDA_SAAS_OAUTH_URL;
-
 import io.camunda.saas.administration.api.client.api.CamundaSaasAdministrationApiClient;
 import io.camunda.saas.administration.api.client.properties.CamundaSaasAdministrationApiClientProperties;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -22,21 +19,24 @@ import org.springframework.context.annotation.Bean;
     name = "enabled",
     havingValue = "true",
     matchIfMissing = true)
-@EnableConfigurationProperties(CamundaSaasAdministrationApiClientSpringProperties.class)
+@EnableConfigurationProperties({
+  CamundaSaasAdministrationApiClientSpringProperties.class,
+  CamundaOAuthSpringProperties.class
+})
 public class CamundaSaasAdministrationApiClientAutoConfiguration {
 
   @Bean
   @ConditionalOnMissingBean
   public CamundaSaasAdministrationApiClientProperties camundaSaasAdministrationApiClientProperties(
       CamundaSaasAdministrationApiClientSpringProperties properties,
-      @Value("${camunda.oauth-url:" + CAMUNDA_SAAS_OAUTH_URL + "}") String oAuthUrl) {
+      CamundaOAuthSpringProperties oAuthProperties) {
     requireText(properties.clientId(), "client-id");
     requireText(properties.clientSecret(), "client-secret");
     return new CamundaSaasAdministrationApiClientProperties(
         properties.baseUrl(),
         properties.clientId(),
         properties.clientSecret(),
-        oAuthUrl,
+        oAuthProperties.oauthUrl(),
         properties.oauthAudience());
   }
 
