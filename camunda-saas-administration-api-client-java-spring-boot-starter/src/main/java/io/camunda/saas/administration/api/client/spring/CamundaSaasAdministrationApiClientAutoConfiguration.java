@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Bean;
 /**
  * Registers a {@link CamundaSaasAdministrationApiClient} bean unless {@code
  * camunda.saas.administration.api.enabled} is set to {@code false}. Define your own bean of that
- * type to replace it.
+ * type to replace it. Startup fails if {@code client-id} or {@code client-secret} is missing.
  */
 @AutoConfiguration
 @ConditionalOnProperty(
@@ -30,6 +30,8 @@ public class CamundaSaasAdministrationApiClientAutoConfiguration {
   public CamundaSaasAdministrationApiClientProperties camundaSaasAdministrationApiClientProperties(
       CamundaSaasAdministrationApiClientSpringProperties properties,
       @Value("${camunda.oauth-url:" + CAMUNDA_SAAS_OAUTH_URL + "}") String oAuthUrl) {
+    requireText(properties.clientId(), "client-id");
+    requireText(properties.clientSecret(), "client-secret");
     return new CamundaSaasAdministrationApiClientProperties(
         properties.baseUrl(),
         properties.clientId(),
@@ -43,5 +45,15 @@ public class CamundaSaasAdministrationApiClientAutoConfiguration {
   public CamundaSaasAdministrationApiClient camundaSaasAdministrationApiClient(
       CamundaSaasAdministrationApiClientProperties properties) {
     return CamundaSaasAdministrationApiClient.create(properties);
+  }
+
+  private static void requireText(String value, String name) {
+    if (value == null || value.isBlank()) {
+      throw new IllegalStateException(
+          "Property 'camunda.saas.administration.api."
+              + name
+              + "' must be set, or disable the client with"
+              + " 'camunda.saas.administration.api.enabled=false'");
+    }
   }
 }

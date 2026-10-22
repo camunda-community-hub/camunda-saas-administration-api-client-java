@@ -28,6 +28,33 @@ public class CamundaSaasAdministrationApiClientAutoConfigurationTest {
   }
 
   @Test
+  void shouldFailWithoutCredentials() {
+    runner.run(
+        context ->
+            assertThat(context)
+                .hasFailed()
+                .getFailure()
+                .hasRootCauseMessage(
+                    "Property 'camunda.saas.administration.api.client-id' must be set, or disable"
+                        + " the client with 'camunda.saas.administration.api.enabled=false'"));
+  }
+
+  @Test
+  void shouldFailWithoutClientSecret() {
+    runner
+        .withPropertyValues("camunda.saas.administration.api.client-id=id")
+        .run(
+            context ->
+                assertThat(context)
+                    .hasFailed()
+                    .getFailure()
+                    .hasRootCauseMessage(
+                        "Property 'camunda.saas.administration.api.client-secret' must be set, or"
+                            + " disable the client with"
+                            + " 'camunda.saas.administration.api.enabled=false'"));
+  }
+
+  @Test
   void shouldCreateClientWithDefaults() {
     runner
         .withPropertyValues(
