@@ -51,13 +51,20 @@ var saasAdministrationApiClient = CamundaSaasAdministrationApiClient.fromPropert
 
 The properties are:
 
+<!-- docs:snippet properties-file properties -->
+```properties
+# mandatory
+camunda.saas.administration.api.client-id=<client-id>
+# mandatory
+camunda.saas.administration.api.client-secret=<client-secret>
+# optional, default: https://login.cloud.camunda.io/oauth/token
+camunda.oauth-url=https://login.cloud.camunda.io/oauth/token
+# optional, default: https://api.cloud.camunda.io
+camunda.saas.administration.api.base-url=https://api.cloud.camunda.io
+# optional, default: api.cloud.camunda.io
+camunda.saas.administration.api.oauth-audience=api.cloud.camunda.io
 ```
-camunda.saas.administration.api.client-id (mandatory)
-camunda.saas.administration.api.client-secret (mandatory)
-camunda.oauth-url (default: 'https://login.cloud.camunda.io/oauth/token')
-camunda.saas.administration.api.base-url (default: 'https://api.cloud.camunda.io')
-camunda.saas.administration.api.oauth-audience (default: 'api.cloud.camunda.io')
-```
+<!-- docs:end -->
 
 ## Usage
 
@@ -249,6 +256,7 @@ public class SpringBootExample {
 
 The properties are the same as above:
 
+<!-- docs:snippet spring-boot-yaml yaml -->
 ```yaml
 camunda:
   oauth-url: https://login.cloud.camunda.io/oauth/token # optional
@@ -261,6 +269,7 @@ camunda:
         base-url: https://api.cloud.camunda.io # optional
         oauth-audience: api.cloud.camunda.io # optional
 ```
+<!-- docs:end -->
 
 ## Development
 

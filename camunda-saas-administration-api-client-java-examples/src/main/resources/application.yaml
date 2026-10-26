@@ -1,0 +1,12 @@
+# docs:start spring-boot-yaml
+camunda:
+  oauth-url: https://login.cloud.camunda.io/oauth/token # optional
+  saas:
+    administration:
+      api:
+        enabled: true # optional
+        client-id: ... # mandatory
+        client-secret: ... # mandatory
+        base-url: https://api.cloud.camunda.io # optional
+        oauth-audience: api.cloud.camunda.io # optional
+# docs:end spring-boot-yaml
