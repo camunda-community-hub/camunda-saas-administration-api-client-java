@@ -143,6 +143,29 @@ class SyncDocsTest {
   }
 
   @Test
+  void shouldSyncMarkdownWithCrlfLineEndingsAndKeepThem() throws IOException {
+    source("A.java", "// docs:start s\nint a;\n\nint b;\n// docs:end s\n");
+    markdown("before\r\n<!-- docs:snippet s java -->\r\nstale\r\n<!-- docs:end -->\r\nafter\r\n");
+
+    sync();
+
+    assertThat(readme())
+        .isEqualTo(
+            "before\r\n<!-- docs:snippet s java -->\r\n```java\r\nint a;\r\n\r\nint b;\r\n```\r\n<!-- docs:end -->\r\nafter\r\n");
+  }
+
+  @Test
+  void shouldSyncSourcesWithCrlfLineEndings() throws IOException {
+    source("A.java", "// docs:start s\r\n  int a;\r\n// docs:end s\r\n");
+    markdown("<!-- docs:snippet s java -->\n<!-- docs:end -->\n");
+
+    sync();
+
+    assertThat(readme())
+        .isEqualTo("<!-- docs:snippet s java -->\n```java\nint a;\n```\n<!-- docs:end -->\n");
+  }
+
+  @Test
   void shouldFailForUnknownSnippet() throws IOException {
     source("A.java", "// docs:start s\nint a;\n// docs:end s\n");
     markdown("<!-- docs:snippet missing java -->\n<!-- docs:end -->\n");

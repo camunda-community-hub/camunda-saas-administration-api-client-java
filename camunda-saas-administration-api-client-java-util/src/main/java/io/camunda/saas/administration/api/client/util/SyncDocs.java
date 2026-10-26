@@ -24,7 +24,8 @@ import java.util.stream.Stream;
  * </pre>
  *
  * whose content is replaced with a fenced code block holding the snippet. Syncing fails if a
- * referenced snippet does not exist.
+ * referenced snippet does not exist. LF and CRLF line endings are both accepted and the line ending
+ * of each block's opening marker is kept.
  *
  * <p>Usage: {@code SyncDocs <source-root> <markdown-file>}
  */
@@ -33,7 +34,8 @@ public final class SyncDocs {
   private static final Pattern START = Pattern.compile("docs:start\\s+(\\S+)");
   private static final Pattern END = Pattern.compile("docs:end\\s+(\\S+)");
   private static final Pattern BLOCK =
-      Pattern.compile("<!-- docs:snippet (\\S+) (\\S+) -->\\n.*?<!-- docs:end -->", Pattern.DOTALL);
+      Pattern.compile(
+          "<!-- docs:snippet (\\S+) (\\S+) -->(\\r?\\n).*?<!-- docs:end -->", Pattern.DOTALL);
 
   private SyncDocs() {}
 
@@ -69,9 +71,11 @@ public final class SyncDocs {
         throw new IllegalStateException(
             "%s references unknown snippet '%s'".formatted(documentName, name));
       }
+      String eol = matcher.group(3);
       String block =
-          "<!-- docs:snippet %1$s %2$s -->\n```%2$s\n%3$s\n```\n<!-- docs:end -->"
-              .formatted(name, matcher.group(2), snippet);
+          ("<!-- docs:snippet %1$s %2$s -->\n```%2$s\n%3$s\n```\n<!-- docs:end -->")
+              .formatted(name, matcher.group(2), snippet)
+              .replace("\n", eol);
       matcher.appendReplacement(result, Matcher.quoteReplacement(block));
     }
     matcher.appendTail(result);
