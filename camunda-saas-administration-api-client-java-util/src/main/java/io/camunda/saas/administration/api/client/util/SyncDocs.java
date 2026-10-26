@@ -35,7 +35,12 @@ public final class SyncDocs {
   private static final Pattern END = Pattern.compile("docs:end\\s+(\\S+)");
   private static final Pattern BLOCK =
       Pattern.compile(
-          "<!-- docs:snippet (\\S+) (\\S+) -->(\\r?\\n).*?<!-- docs:end -->", Pattern.DOTALL);
+          "^<!-- docs:snippet (\\S+) (\\S+) -->(\\r?\\n)(?:(?!<!-- docs:snippet).)*?<!-- docs:end -->",
+          Pattern.DOTALL | Pattern.MULTILINE);
+  private static final Pattern OPENING_MARKER =
+      Pattern.compile("^<!-- docs:snippet", Pattern.MULTILINE);
+  private static final Pattern CLOSING_MARKER =
+      Pattern.compile("^<!-- docs:end -->", Pattern.MULTILINE);
 
   private SyncDocs() {}
 
@@ -64,7 +69,9 @@ public final class SyncDocs {
   static String inject(String markdown, Map<String, String> snippets, Object documentName) {
     Matcher matcher = BLOCK.matcher(markdown);
     StringBuilder result = new StringBuilder();
+    int blocks = 0;
     while (matcher.find()) {
+      blocks++;
       String name = matcher.group(1);
       String snippet = snippets.get(name);
       if (snippet == null) {
@@ -79,7 +86,22 @@ public final class SyncDocs {
       matcher.appendReplacement(result, Matcher.quoteReplacement(block));
     }
     matcher.appendTail(result);
+    requireWellFormed(markdown, blocks, documentName);
     return result.toString();
+  }
+
+  /**
+   * Fails if the markdown contains opening or closing markers that do not belong to a complete
+   * block, so a missing marker cannot make a block swallow the text up to the next one.
+   */
+  private static void requireWellFormed(String markdown, int blocks, Object documentName) {
+    long opening = OPENING_MARKER.matcher(markdown).results().count();
+    long closing = CLOSING_MARKER.matcher(markdown).results().count();
+    if (opening != blocks || closing != blocks) {
+      throw new IllegalStateException(
+          "%s has %d snippet block(s) but %d opening and %d closing marker(s); every '<!-- docs:snippet <name> <lang> -->' needs a matching '<!-- docs:end -->'"
+              .formatted(documentName, blocks, opening, closing));
+    }
   }
 
   static Map<String, String> collectSnippets(Path root) throws IOException {

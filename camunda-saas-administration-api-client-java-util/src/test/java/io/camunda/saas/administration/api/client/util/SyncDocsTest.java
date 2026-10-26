@@ -166,6 +166,53 @@ class SyncDocsTest {
   }
 
   @Test
+  void shouldFailAndKeepFileForBlockWithoutClosingMarker() throws IOException {
+    source("A.java", "// docs:start s\nint a;\n// docs:end s\n");
+    String content =
+        "<!-- docs:snippet s java -->\n## Heading\ntext\n<!-- docs:snippet s java -->\n<!-- docs:end -->\n";
+    markdown(content);
+
+    assertThatThrownBy(this::sync)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("README.md")
+        .hasMessageContaining("needs a matching '<!-- docs:end -->'");
+    assertThat(readme()).isEqualTo(content);
+  }
+
+  @Test
+  void shouldFailForClosingMarkerWithoutOpeningMarker() throws IOException {
+    source("A.java", "// docs:start s\nint a;\n// docs:end s\n");
+    markdown("<!-- docs:snippet s java -->\n<!-- docs:end -->\ntext\n<!-- docs:end -->\n");
+
+    assertThatThrownBy(this::sync)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("needs a matching '<!-- docs:end -->'");
+  }
+
+  @Test
+  void shouldFailForMalformedOpeningMarker() throws IOException {
+    source("A.java", "// docs:start s\nint a;\n// docs:end s\n");
+    markdown("<!-- docs:snippet s -->\n<!-- docs:end -->\n");
+
+    assertThatThrownBy(this::sync)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("needs a matching '<!-- docs:end -->'");
+  }
+
+  @Test
+  void shouldIgnoreMarkersMentionedInsideText() throws IOException {
+    source("A.java", "// docs:start s\nint a;\n// docs:end s\n");
+    markdown(
+        "Use `<!-- docs:snippet <name> <lang> -->` and `<!-- docs:end -->` to embed code.\n\n<!-- docs:snippet s java -->\n<!-- docs:end -->\n");
+
+    sync();
+
+    assertThat(readme())
+        .isEqualTo(
+            "Use `<!-- docs:snippet <name> <lang> -->` and `<!-- docs:end -->` to embed code.\n\n<!-- docs:snippet s java -->\n```java\nint a;\n```\n<!-- docs:end -->\n");
+  }
+
+  @Test
   void shouldFailForUnknownSnippet() throws IOException {
     source("A.java", "// docs:start s\nint a;\n// docs:end s\n");
     markdown("<!-- docs:snippet missing java -->\n<!-- docs:end -->\n");
