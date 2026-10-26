@@ -121,6 +121,11 @@ public final class SyncDocs {
       Matcher start = START.matcher(line);
       Matcher end = END.matcher(line);
       if (start.find()) {
+        if (openName != null) {
+          throw new IllegalStateException(
+              "%s: docs:start %s inside open snippet '%s'"
+                  .formatted(file, start.group(1), openName));
+        }
         openName = start.group(1);
         lines = new ArrayList<>();
       } else if (end.find()) {

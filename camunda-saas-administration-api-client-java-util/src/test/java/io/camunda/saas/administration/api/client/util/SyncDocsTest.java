@@ -245,6 +245,16 @@ class SyncDocsTest {
   }
 
   @Test
+  void shouldFailForStartInsideOpenSnippet() throws IOException {
+    source("A.java", "// docs:start s\nint a;\n// docs:start s\nint b;\n// docs:end s\n");
+    markdown("<!-- docs:snippet s java -->\n<!-- docs:end -->\n");
+
+    assertThatThrownBy(this::sync)
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessageContaining("docs:start s inside open snippet 's'");
+  }
+
+  @Test
   void shouldFailForEndWithoutMatchingStart() throws IOException {
     source("A.java", "// docs:start s\nint a;\n// docs:end other\n");
     markdown("<!-- docs:snippet s java -->\n<!-- docs:end -->\n");
