@@ -274,4 +274,4 @@ This also runs as a pre-commit hook.
 
 ### Documentation snippets
 
-Code snippets in this README are not written by hand. They live in the `camunda-saas-administration-api-client-java-examples` module, delimited by `docs:start <name>` / `docs:end <name>` comments, so the compiler fails the build when the API drifts. Every build copies them into the `<!-- docs:snippet <name> <lang> -->` blocks of this file (see `tools/SyncDocs.java` in the examples module). Do not edit the content of those blocks; edit the example instead and commit the updated README.
+Code snippets in this README are not written by hand. They live in the `camunda-saas-administration-api-client-java-examples` module, delimited by `docs:start <name>` / `docs:end <name>` comments, so the compiler fails the build when the API drifts. Every build copies them into the `<!-- docs:snippet <name> <lang> -->` blocks of this file (see `SyncDocs` in the `util` module). Do not edit the content of those blocks; edit the example instead and commit the updated README.

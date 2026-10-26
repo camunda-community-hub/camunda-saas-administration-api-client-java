@@ -15,6 +15,7 @@
     <module>camunda-saas-administration-api-client-java-generated</module>
     <module>camunda-saas-administration-api-client-java-core</module>
     <module>camunda-saas-administration-api-client-java-spring-boot-starter</module>
+    <module>camunda-saas-administration-api-client-java-util</module>
     <module>camunda-saas-administration-api-client-java-examples</module>
   </modules>
 

@@ -25,6 +25,11 @@
       <artifactId>camunda-saas-administration-api-client-java-spring-boot-starter</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.camunda</groupId>
+      <artifactId>camunda-saas-administration-api-client-java-util</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -38,12 +43,12 @@
             <id>sync-docs</id>
             <phase>process-classes</phase>
             <goals>
-              <goal>exec</goal>
+              <goal>java</goal>
             </goals>
             <configuration>
-              <executable>${java.home}/bin/java</executable>
+              <mainClass>io.camunda.saas.administration.api.client.util.SyncDocs</mainClass>
+              <classpathScope>compile</classpathScope>
               <arguments>
-                <argument>${project.basedir}/tools/SyncDocs.java</argument>
                 <argument>${project.basedir}/src/main</argument>
                 <argument>${project.parent.basedir}/README.md</argument>
               </arguments>

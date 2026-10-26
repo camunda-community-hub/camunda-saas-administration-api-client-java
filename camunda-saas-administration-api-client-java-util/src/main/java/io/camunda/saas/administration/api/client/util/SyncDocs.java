@@ -1,3 +1,5 @@
+package io.camunda.saas.administration.api.client.util;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,7 +12,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 /**
- * Copies code snippets from the examples module into the documentation.
+ * Copies code snippets from source files into the documentation.
  *
  * <p>Snippets are delimited in source files by lines containing {@code docs:start <name>} and
  * {@code docs:end <name>}. The documentation references them with a block of the form
@@ -21,31 +23,51 @@ import java.util.stream.Stream;
  * &lt;!-- docs:end --&gt;
  * </pre>
  *
- * whose content is replaced with a fenced code block holding the snippet. The build fails if a
+ * whose content is replaced with a fenced code block holding the snippet. Syncing fails if a
  * referenced snippet does not exist.
  *
- * <p>Usage: {@code java SyncDocs.java <source-root> <markdown-file>}
+ * <p>Usage: {@code SyncDocs <source-root> <markdown-file>}
  */
-public class SyncDocs {
+public final class SyncDocs {
 
   private static final Pattern START = Pattern.compile("docs:start\\s+(\\S+)");
   private static final Pattern END = Pattern.compile("docs:end\\s+(\\S+)");
   private static final Pattern BLOCK =
-      Pattern.compile(
-          "<!-- docs:snippet (\\S+) (\\S+) -->\\n.*?<!-- docs:end -->", Pattern.DOTALL);
+      Pattern.compile("<!-- docs:snippet (\\S+) (\\S+) -->\\n.*?<!-- docs:end -->", Pattern.DOTALL);
+
+  private SyncDocs() {}
 
   public static void main(String[] args) throws IOException {
-    Map<String, String> snippets = collectSnippets(Path.of(args[0]));
-    Path markdown = Path.of(args[1]);
+    if (args.length != 2) {
+      throw new IllegalArgumentException("Usage: SyncDocs <source-root> <markdown-file>");
+    }
+    sync(Path.of(args[0]), Path.of(args[1]));
+  }
+
+  /**
+   * Rewrites the snippet blocks of {@code markdown} with the snippets found below {@code
+   * sourceRoot}. The file is only written if its content changes.
+   *
+   * @throws IllegalStateException if a block references an unknown snippet or the snippet markers
+   *     in the sources are malformed
+   */
+  public static void sync(Path sourceRoot, Path markdown) throws IOException {
     String original = Files.readString(markdown);
-    Matcher matcher = BLOCK.matcher(original);
+    String synced = inject(original, collectSnippets(sourceRoot), markdown.getFileName());
+    if (!synced.equals(original)) {
+      Files.writeString(markdown, synced);
+    }
+  }
+
+  static String inject(String markdown, Map<String, String> snippets, Object documentName) {
+    Matcher matcher = BLOCK.matcher(markdown);
     StringBuilder result = new StringBuilder();
     while (matcher.find()) {
       String name = matcher.group(1);
       String snippet = snippets.get(name);
       if (snippet == null) {
         throw new IllegalStateException(
-            "%s references unknown snippet '%s'".formatted(markdown.getFileName(), name));
+            "%s references unknown snippet '%s'".formatted(documentName, name));
       }
       String block =
           "<!-- docs:snippet %1$s %2$s -->\n```%2$s\n%3$s\n```\n<!-- docs:end -->"
@@ -53,15 +75,13 @@ public class SyncDocs {
       matcher.appendReplacement(result, Matcher.quoteReplacement(block));
     }
     matcher.appendTail(result);
-    if (!result.toString().equals(original)) {
-      Files.writeString(markdown, result.toString());
-    }
+    return result.toString();
   }
 
-  private static Map<String, String> collectSnippets(Path root) throws IOException {
+  static Map<String, String> collectSnippets(Path root) throws IOException {
     Map<String, String> snippets = new HashMap<>();
     try (Stream<Path> files = Files.walk(root)) {
-      for (Path file : files.filter(Files::isRegularFile).toList()) {
+      for (Path file : files.filter(Files::isRegularFile).sorted().toList()) {
         collect(file, snippets);
       }
     }
